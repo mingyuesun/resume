@@ -1,0 +1,3 @@
+http://pkug5yyno.bkt.clouddn.com/data.json
+http://pkug5yyno.bkt.clouddn.com/bg.jpg
+http://pkug5yyno.bkt.clouddn.com/smoke.png
