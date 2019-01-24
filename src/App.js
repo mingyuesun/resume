@@ -21,27 +21,25 @@ class App extends Component {
       for (var i = 0; i < v_arr.length; i++) {
         for (var j = 0; j < elements.default.length; j++) {
           if (v_arr[i].toUpperCase() === elements.default[j].name) {
-            return_arr.push(
-              {
-                value: v.slice(0, i) +
+            return_arr.push({
+              value:
+                v.slice(0, i) +
                 ("[" + elements.default[j].name + "]") +
                 v.slice(i + 1),
-                element: elements.default[j]
-              }
-            );
+              element: elements.default[j]
+            });
           }
           if (i < v_arr.length - 1) {
             if (
               v_arr[i].toUpperCase() + v_arr[i + 1].toLowerCase() ===
               elements.default[j].name
             ) {
-              return_arr.push(
-                {
-                 value: v.slice(0, i) +
+              return_arr.push({
+                value:
+                  v.slice(0, i) +
                   ("[" + elements.default[j].name + "]" + v.slice(i + 2)),
-                 element: elements.default[j]
-                }
-              );
+                element: elements.default[j]
+              });
             }
           }
         }
@@ -56,19 +54,31 @@ class App extends Component {
     if (e.target.value.split(" ").length === 1) {
       input_arr = Array.of(e.target.value);
     } else {
-      input_arr = e.target.value.split(" ");
+      input_arr = e.target.value.trim().split(" ");
     }
 
     let arr1 = [];
     let arr2 = [];
     if (input_arr.length % 2 === 0) {
-      select_one = input_arr.slice(0, input_arr.length / 2);
-      select_two = input_arr.slice(input_arr.length / 2);
+      select_one = input_arr
+        .slice(0, input_arr.length / 2)
+        .join(" ")
+        .split();
+      select_two = input_arr
+        .slice(input_arr.length / 2)
+        .join(" ")
+        .split();
       this.handleArray(select_one, arr1);
       this.handleArray(select_two, arr2);
     } else {
-      select_one = input_arr.slice(0, (input_arr.length + 1) / 2);
-      select_two = input_arr.slice((input_arr.length + 1) / 2);
+      select_one = input_arr
+        .slice(0, (input_arr.length + 1) / 2)
+        .join(" ")
+        .split();
+      select_two = input_arr
+        .slice((input_arr.length + 1) / 2)
+        .join(" ")
+        .split();
       this.handleArray(select_one, arr1);
       this.handleArray(select_two, arr2);
     }
@@ -78,34 +88,59 @@ class App extends Component {
     });
     if (arr1.length) {
       this.setState({
-        first_rect: arr1[0].element
-      })
+        first_rect: arr1[0].element,
+        first_select_option: arr1[0].value
+      });
     }
     if (arr2.length) {
       this.setState({
-        second_rect: arr2[0].element
-      })
+        second_rect: arr2[0].element,
+        second_select_option: arr2[0].value
+      });
     }
   };
 
   changeFirstSelect = index => {
-    const { select_one } = this.state
+    const { select_one } = this.state;
+    let first_select_option = select_one[index].value
     this.setState({
-      first_select_option: select_one[index].value,
+      first_select_option,
       first_rect: select_one[index].element
-    })
+    });
   };
 
   changeSecondSelect = index => {
-    const { select_two } = this.state
+    const { select_two } = this.state;
     this.setState({
       second_select_option: select_two[index].value,
       second_rect: select_two[index].element
-    })
+    });
+  };
+
+  handleSliceStr = str => {
+    if (!str) return;
+    let str_arr = str.split("");
+    let return_str = [];
+    for (let i = 0; i < str_arr.length; i++) {
+      if (str_arr[i] === "[") {
+        return_str.push(str_arr.slice(0, i).join(""));
+      }
+      if (str_arr[i] === "]") {
+        return_str.push(str_arr.slice(i + 1).join(""));
+      }
+    }
+    return return_str;
   };
 
   render() {
-    const { select_one, select_two, first_rect, second_rect, first_select_option, second_select_option } = this.state;
+    const {
+      select_one,
+      select_two,
+      first_rect,
+      second_rect,
+      first_select_option,
+      second_select_option
+    } = this.state;
 
     return (
       <Root className="App">
@@ -113,18 +148,17 @@ class App extends Component {
           <header>
             <div className="left">
               <input
-                className="input"
                 type="text"
                 placeholder="please input words..."
                 onChange={this.onChange}
               />
             </div>
             <div className="right">
-              <div className="select select-one">
+              <div>
                 <p>第一组匹配:</p>
                 <select
                   onChange={e => this.changeFirstSelect(e.target.value)}
-                  value={first_select_option}
+                  // value={first_select_option}
                 >
                   {select_one &&
                     select_one.map((o, i) => (
@@ -134,11 +168,11 @@ class App extends Component {
                     ))}
                 </select>
               </div>
-              <div className="select select-two">
+              <div>
                 <p>第二组匹配:</p>
                 <select
-                  onChange={e=>this.changeSecondSelect(e.target.value)}
-                  value={second_select_option}
+                  onChange={e => this.changeSecondSelect(e.target.value)}
+                  // value={second_select_option}
                 >
                   {select_two &&
                     select_two.map((o, i) => (
@@ -150,44 +184,62 @@ class App extends Component {
               </div>
             </div>
           </header>
-          <main>
+          <Main>
             <div className="smoke">
-              <div className="element-rect">
+              <ElementRect>
                 {first_rect && (
-                  <div className="rect rect-top">
-                    <div className="top">
-                      <p>{first_rect.quality}</p>
-                      <p>
-                        {
-                          first_rect.cv && first_rect.cv.map(c => (
-                            <li key={c}>{c}</li>
-                          ))
-                        }
-                      </p>
+                  <div>
+                    <p>
+                      {first_select_option &&
+                        this.handleSliceStr(first_select_option)[0]}
+                    </p>
+                    <div className="rect rect-top">
+                      <div>
+                        <p>{first_rect.quality}</p>
+                        <p>{first_rect.index}</p>
+                      </div>
+                      <div>{first_rect.name}</div>
+                      <div>
+                        <p>
+                          {first_rect.cv &&
+                            first_rect.cv.map(c => <li key={c}>{c}</li>)}
+                        </p>
+                      </div>
                     </div>
-                    <div className="middle">{first_rect.name}</div>
-                    <div className="bottom">{first_rect.index}</div>
+                    <p>
+                      {first_select_option &&
+                        this.handleSliceStr(first_select_option)[1]}
+                    </p>
                   </div>
                 )}
                 {second_rect && (
-                  <div className="rect rect-bottom">
-                    <div className="top">
-                    <p>{second_rect.quality}</p>
-                      <p>
-                        {
-                          second_rect.cv && second_rect.cv.map(c => (
-                            <li key={c}>{c}</li>
-                          ))
-                        }
-                      </p>
+                  <div>
+                    <p>
+                      {second_select_option &&
+                        this.handleSliceStr(second_select_option)[0]}
+                    </p>
+                    <div className="rect rect-bottom">
+                      <div>
+                        <p>{second_rect.quality}</p>
+                        <p>{second_rect.index}</p>
+                      </div>
+                      <div>{second_rect.name}</div>
+                      <div>
+                        <p>
+                          {second_rect.cv &&
+                            second_rect.cv.map(c => <li key={c}>{c}</li>)}
+                        </p>
+                      </div>
                     </div>
-                    <div className="middle">{second_rect.name}</div>
-                    <div className="bottom">{second_rect.index}</div>
+                    <p>
+                      {second_select_option &&
+                        this.handleSliceStr(second_select_option)[1]}
+                    </p>
                   </div>
                 )}
-              </div>
+              </ElementRect>
             </div>
-          </main>
+          </Main>
         </div>
       </Root>
     );
@@ -207,36 +259,43 @@ const Root = styled.div`
     justify-content: space-between;
     padding: 0 30px;
     line-height: 80px;
+    > div: first-child {
+      input[type="text"] {
+        padding: 5px;
+        font-size: 16px;
+        width: 300px;
+      }
+    }
+    > div: last-child {
+      display: flex;
+      justify-content: space-between;
+      line-height: 15px;
+      div {
+        > p {
+          color: #fff;
+          font-size: 14px;
+        }
+        select {
+          width: 100%;
+          min-width: 100px;
+        }
+      }
+      >div: first-child {
+        margin-right: 20px;
+      }
+    }
   }
-  header .left .input {
-    padding: 5px;
-    font-size: 16px;
-    width: 300px;
-  }
-  header .right {
-    display: flex;
-    justify-content: space-between;
-    line-height: 15px;
-  }
-  header .right .select p {
-    color: #fff;
-    font-size: 14px;
-  }
-  header .right .select select {
-    width: 100px;
-  }
-  header .right .select-one {
-    margin-right: 20px;
-  }
-  main {
-    margin: 0 auto;
-    border: 2px solid lightGreen;
-    margin-top: 20px;
-    width: 960px;
-    height: 600px;
-    background: url(${bgImg}) no-repeat center;
-    background-attachment: fixed;
-  }
+`;
+
+const Main = styled.div`
+  margin: 20px auto;
+  border: 2px solid lightGreen;
+  width: 960px;
+  height: 600px;
+  background: url(${bgImg}) no-repeat center;
+  background-attachment: fixed;
+  background-size: cover;
+
   .smoke {
     background-size: 100%;
     background-attachment: fixed;
@@ -247,38 +306,85 @@ const Root = styled.div`
     justify-content: center;
     background: url(${smokeImg}) no-repeat center right;
   }
-  main .smoke .element-rect {
-    width: 272px;
-    height: 272px;
+`;
+
+const ElementRect = styled.div`
+  width: 100%;
+  height: 272px;
+  > div {
+    display: flex;
+    justify-content: center;
+    > p {
+      color: #fff;
+      font-size: 40px;
+    }
   }
-  main .smoke .element-rect .rect {
+
+  > div: first-child > p: first-child, > div: last-child > p: last-child {
+    width: 333px!important;
+  }
+
+  > div: first-child > p: last-child, > div: last-child > p: first-child  {
+    width: 469px!important;
+  }
+
+  > div: first-child > p: first-child, > div: last-child > p: first-child {
+    text-align: right;
+  }
+
+  > div: first-child > p: last-child, > div: last-child > p: last-child {
+    text-align: left;
+  }
+
+  .rect {
     padding: 5px;
     color: #fff;
-    width: 136px;
-    height: 136px;
+    width: 124px;
+    height: 124px;
     border: 1px solid #ccc;
-    .top {
+    margin: 0 10px;
+    display: flex;
+
+    > div: first-child {
+      width: 30%;
       display: flex;
       justify-content: space-between;
+      flex-direction: column;
       p {
         margin: 0;
-      }
-      li {
-        list-style: none;
+        text-align: left;
       }
     }
-    .middle {
+
+    > div: nth-child(2) {
+      width: 40%;
       font-size: 65px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    .bottom {
-      text-align: left;
+
+    > div: last-child {
+      width: 30%;
+      display: flex;
+      justify-content: flex-end;
+      p {
+        margin: 0;
+        li {
+          list-style: none;
+        }
+      }
     }
   }
-  main .smoke .element-rect .rect-top {
-    background: linear-gradient(rgba(85, 255, 131, 0.12), rgba(3, 3, 3, 0.5));
+
+  .rect-top {
+    background: linear-gradient(
+      rgba(85, 255, 131, 0.12),
+      rgba(3, 3, 3, 0.5)
+    );
   }
-  main .smoke .element-rect .rect-bottom {
-    margin-left: 137px;
+
+  .rect-bottom {
     background: rgba(87, 209, 139, 0.1);
   }
-`;
+`
