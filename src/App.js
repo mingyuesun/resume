@@ -20,6 +20,7 @@ class App extends Component {
       let v_arr = v.split("");
       for (var i = 0; i < v_arr.length; i++) {
         for (var j = 0; j < elements.default.length; j++) {
+          // search v_arr[i] in data.json
           if (v_arr[i].toUpperCase() === elements.default[j].name) {
             return_arr.push({
               value:
@@ -29,6 +30,7 @@ class App extends Component {
               element: elements.default[j]
             });
           }
+          // search v_arr[i] + v_arr[i+1] in data.json
           if (i < v_arr.length - 1) {
             if (
               v_arr[i].toUpperCase() + v_arr[i + 1].toLowerCase() ===
@@ -121,6 +123,8 @@ class App extends Component {
     if (!str) return;
     let str_arr = str.split("");
     let return_str = [];
+    return_str[0] = str_arr.slice(0, str_arr.indexOf(v => v === "[")).join("")
+    return_str[1] = str_arr.slice(0, str_arr.indexOf(v => v === "]")).join("")
     for (let i = 0; i < str_arr.length; i++) {
       if (str_arr[i] === "[") {
         return_str.push(str_arr.slice(0, i).join(""));
@@ -158,7 +162,6 @@ class App extends Component {
                 <p>第一组匹配:</p>
                 <select
                   onChange={e => this.changeFirstSelect(e.target.value)}
-                  // value={first_select_option}
                 >
                   {select_one &&
                     select_one.map((o, i) => (
@@ -172,7 +175,6 @@ class App extends Component {
                 <p>第二组匹配:</p>
                 <select
                   onChange={e => this.changeSecondSelect(e.target.value)}
-                  // value={second_select_option}
                 >
                   {select_two &&
                     select_two.map((o, i) => (
